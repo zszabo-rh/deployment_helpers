@@ -33,7 +33,7 @@ for VM_DOMAIN in $(virsh list --all --name); do \
 done
 
 echo "Waiting for ${VMS} hosts to register"
-while [ "$(curl --silent ${API}/events\?cluster_id\=${CLUSTER_ID} | jq | grep host_registration_succeeded | wc -l)" -eq "${VMS}" ]; do
+while [ "$(curl --silent ${API}/events\?cluster_id\=${CLUSTER_ID} | jq | grep host_registration_succeeded | wc -l)" -ne "${VMS}" ]; do
   sleep 5
 done
 echo "All ${VMS} hosts are registered"

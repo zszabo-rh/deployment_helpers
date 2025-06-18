@@ -1,4 +1,3 @@
-set -eu
 source config.env
 WORKDIR=$(pwd)
 
