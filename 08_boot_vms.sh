@@ -3,9 +3,6 @@ source config.env
 
 # Fix DNS for VMs
 rm -rf /tmp/*.xml*
-export BRIDGE=devbm
-
-rm -rf /tmp/$BRIDGE.xml
 virsh net-dumpxml $BRIDGE > /tmp/$BRIDGE.xml
 sed -i "s|  </dns>|    <host ip='${REGISTRY_HOST_IP6}'>\n      <hostname>${REGISTRY_HOSTNAME}</hostname>\n    </host>\n  </dns>|" /tmp/$BRIDGE.xml
 

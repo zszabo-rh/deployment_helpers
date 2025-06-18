@@ -13,6 +13,7 @@ export RHCOS_ID=$(cat rhcos-id.txt)
 sudo systemctl enable nginx --now
 
 # Clone assisted service
+cd ${WORKDIR}
 rm -rf ./assisted-service && git clone https://github.com/openshift/assisted-service.git && cd assisted-service/deploy/podman/
 
 # Update URLs, IPs and image versions in configmap
