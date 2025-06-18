@@ -1,7 +1,9 @@
 set -eu
 source config.env
 
-git clone https://github.com/openshift-metal3/dev-scripts && cd dev-scripts 
+echo "[INFO] Cloning dev-scripts repository..."
+git clone -q https://github.com/openshift-metal3/dev-scripts >/dev/null 2>&1
+cd dev-scripts
 
 cat >> config_root.sh<< EOF
 #!/bin/bash
@@ -27,7 +29,10 @@ export VM_EXTRADISKS_LIST="vda vdb"
 export VM_EXTRADISKS_SIZE=200G
 EOF
 
-cp ../pull_secret.json .
+cp ../pull_secret.json . >/dev/null 2>&1
 
-make requirements configure
+echo "[INFO] Running make requirements and configure..."
+make requirements configure >/dev/null 2>&1
+
 cd ..
+echo "[INFO] VM setup complete."

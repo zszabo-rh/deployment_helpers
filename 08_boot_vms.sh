@@ -1,17 +1,17 @@
 set -eu
 source config.env
 
-# Fix DNS for VMs
-rm -rf /tmp/*.xml*
+echo "[INFO] Fixing DNS for VMs..."
+rm -rf /tmp/*.xml* >/dev/null 2>&1
 virsh net-dumpxml $BRIDGE > /tmp/$BRIDGE.xml
 sed -i "s|  </dns>|    <host ip='${REGISTRY_HOST_IP6}'>\n      <hostname>${REGISTRY_HOSTNAME}</hostname>\n    </host>\n  </dns>|" /tmp/$BRIDGE.xml
 
-virsh net-destroy ${BRIDGE}
-virsh net-define /tmp/${BRIDGE}.xml
-virsh net-start ${BRIDGE}
+virsh net-destroy ${BRIDGE} >/dev/null 2>&1
+virsh net-define /tmp/${BRIDGE}.xml >/dev/null 2>&1
+virsh net-start ${BRIDGE} >/dev/null 2>&1
 
-# Attach discovery ISO, set boot order
-for VM_DOMAIN in $(virsh list --all --name); do \
+echo "[INFO] Attaching discovery ISO and setting boot order for VMs..."
+for VM_DOMAIN in $(virsh list --all --name); do
   virsh dumpxml ${VM_DOMAIN} > /tmp/${VM_DOMAIN}.xml && cp /tmp/${VM_DOMAIN}.xml /tmp/${VM_DOMAIN}.xml.bak
   # Remove current "first boot device" if exists
   sed -i "s|      <boot order='1'/>$||" /tmp/${VM_DOMAIN}.xml
@@ -28,12 +28,12 @@ for VM_DOMAIN in $(virsh list --all --name); do \
   sed -i "s|<target dev='vda' bus='virtio'/>|<target dev='vda' bus='virtio'/>\n      <boot order='2'/>|" /tmp/${VM_DOMAIN}.xml
   sed -i "s|<target dev='vdb' bus='virtio'/>|<target dev='vdb' bus='virtio'/>\n      <boot order='3'/>|" /tmp/${VM_DOMAIN}.xml
   sed -i "s|<target dev='sdb' bus='sata'/>|<target dev='sdb' bus='sata'/>\n      <boot order='4'/>\n      <source file='${ISO_PATH}'/>|" /tmp/${VM_DOMAIN}.xml
-  virsh define /tmp/${VM_DOMAIN}.xml
-  virsh start ${VM_DOMAIN}
+  virsh define /tmp/${VM_DOMAIN}.xml >/dev/null 2>&1
+  virsh start ${VM_DOMAIN} >/dev/null 2>&1
 done
 
-echo "Waiting for ${VMS} hosts to register"
+echo "[INFO] Waiting for ${VMS} hosts to register..."
 while [ "$(curl --silent ${API}/events\?cluster_id\=${CLUSTER_ID} | jq | grep host_registration_succeeded | wc -l)" -ne "${VMS}" ]; do
   sleep 5
 done
-echo "All ${VMS} hosts are registered"
+echo "[INFO] All ${VMS} hosts are registered."
