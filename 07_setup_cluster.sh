@@ -1,10 +1,10 @@
 set -eu
-source ${WORKDIR}/config.env
+source config.env
 
 # https://github.com/openshift/assisted-service/blob/780deffb6a3555cba0853db088647607b40093f2/deploy/podman/README-disconnected.md
 
 export SSH_KEY=$(cat ~/.ssh/cluster.pub)
-export PULL_SECRET_STR=$(jq -c . /${WORKDIR}/pull_secret.json | jq -c -R .)
+export PULL_SECRET_STR=$(jq -c . pull_secret.json | jq -c -R .)
 
 # Register new cluster
 export CLUSTER_ID=$(curl -X POST -H "Content-Type: application/json" \
@@ -59,7 +59,7 @@ curl \
 "${API}/infra-envs/$INFRA_ENV_ID"
 
 export IDMS=\{\"imageDigestSources\":[\{\"source\":\"quay.io/openshift-release-dev/ocp-v4.0-art-dev\",\"mirrors\":[\"${REGISTRY_HOSTNAME}:${REG_PORT}/ocp4/openshift4\"]\},\{\"source\":\"quay.io/openshift-release-dev/ocp-release\",\"mirrors\":[\"${REGISTRY_HOSTNAME}:${REG_PORT}/ocp4/openshift4\"]\}]\}
-export TRUST_BUNDLE=$(jq -Rsc '{additionalTrustBundle: .}' /${WORKDIR}/tls-ca-bundle.pem)
+export TRUST_BUNDLE=$(jq -Rsc '{additionalTrustBundle: .}' ./tls-ca-bundle.pem)
 export INSTALL_PATCH=$(jq -cn --argjson idms "$IDMS" --argjson trust "$TRUST_BUNDLE" '$idms + $trust' | jq -Rc .)
 
 curl \

@@ -1,5 +1,6 @@
 set -eu
 source config.env
+WORKDIR=$(pwd)
 
 # Setup web server for RHCOS images
 sudo mkdir -p /usr/share/nginx/html/pub/openshift-v4/amd64/dependencies/rhcos/4.18/${RHCOS_VER}
@@ -33,7 +34,7 @@ sed -i 's/    ports://g' pod-persistent-disconnected.yml
 sed -i 's/    - hostPort:.*$//g' pod-persistent-disconnected.yml
 
 # Inser cert to configmap
-yes | cp -f /${WORKDIR}/tls-ca-bundle.pem .
+yes | cp -f ${WORKDIR}/tls-ca-bundle.pem .
 
 awk '
   FILENAME == ARGV[1] {
@@ -61,10 +62,12 @@ awk '
 ' tls-ca-bundle.pem configmap-disconnected.yml > configmap-disconnected-patched.yml
 
 # Run the assisted installer
-yes | cp -f /${WORKDIR}/pull_secret.json /run/user/0/containers/auth.json
+yes | cp -f ${WORKDIR}/pull_secret.json /run/user/0/containers/auth.json
 podman stop $(podman ps -aq --filter name=assisted-installer)
 podman rm $(podman ps -aq --filter name=assisted-installer)
 podman volume rm config
 podman pod rm assisted-installer
 
 podman play kube --configmap configmap-disconnected-patched.yml pod-persistent-disconnected.yml
+
+cd ${WORKDIR}
