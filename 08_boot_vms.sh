@@ -30,10 +30,10 @@ for VM_DOMAIN in $(virsh list --all --name); do \
   sed -i "s|<target dev='sdb' bus='sata'/>|<target dev='sdb' bus='sata'/>\n      <boot order='4'/>\n      <source file='${ISO_PATH}'/>|" /tmp/${VM_DOMAIN}.xml
   virsh define /tmp/${VM_DOMAIN}.xml
   virsh start ${VM_DOMAIN}
-
-  echo "Waiting for ${VMS} hosts to register"
-  while [ "$(curl --silent ${API}/events\?cluster_id\=${CLUSTER_ID} | jq | grep host_registration_succeeded | wc -l)" -eq "${VMS}" ]; do
-    sleep 5
-  done
-  echo "All ${VMS} hosts are registered"
 done
+
+echo "Waiting for ${VMS} hosts to register"
+while [ "$(curl --silent ${API}/events\?cluster_id\=${CLUSTER_ID} | jq | grep host_registration_succeeded | wc -l)" -eq "${VMS}" ]; do
+  sleep 5
+done
+echo "All ${VMS} hosts are registered"
