@@ -1,0 +1,36 @@
+set -eu
+source config.env
+
+# Fix DNS for VMs
+rm -rf /tmp/*.xml*
+export BRIDGE=devbm
+
+rm -rf /tmp/$BRIDGE.xml
+virsh net-dumpxml $BRIDGE > /tmp/$BRIDGE.xml
+sed -i "s|  </dns>|    <host ip='${REGISTRY_HOST_IP6}'>\n      <hostname>${REGISTRY_HOSTNAME}</hostname>\n    </host>\n  </dns>|" /tmp/$BRIDGE.xml
+
+virsh net-destroy ${BRIDGE}
+virsh net-define /tmp/${BRIDGE}.xml
+virsh net-start ${BRIDGE}
+
+# Attach discovery ISO, set boot order
+for VM_DOMAIN in $(virsh list --all --name); do \
+  virsh dumpxml ${VM_DOMAIN} > /tmp/${VM_DOMAIN}.xml && cp /tmp/${VM_DOMAIN}.xml /tmp/${VM_DOMAIN}.xml.bak
+  # Remove current "first boot device" if exists
+  sed -i "s|      <boot order='1'/>$||" /tmp/${VM_DOMAIN}.xml
+  sed -i "s|      <boot order='2'/>$||" /tmp/${VM_DOMAIN}.xml
+  sed -i "s|      <boot order='3'/>$||" /tmp/${VM_DOMAIN}.xml
+  sed -i "s|      <boot order='4'/>$||" /tmp/${VM_DOMAIN}.xml
+  sed -i "s|      <source file=''/>$||" /tmp/${VM_DOMAIN}.xml
+  sed -i "s|      <source file='.*iso'/>$||" /tmp/${VM_DOMAIN}.xml
+  sed -i "s|    <boot dev='network'/>$||" /tmp/${VM_DOMAIN}.xml
+  sed -i "s|    <boot dev='cdrom'/>$||" /tmp/${VM_DOMAIN}.xml
+  sed -i "s|    <boot dev='hd'/>$||" /tmp/${VM_DOMAIN}.xml
+  # Attach ISO to existing cdrom and mark it as last boot device
+  sed -i "s|<target dev='sda' bus='scsi'/>|<target dev='sda' bus='scsi'/>\n      <boot order='1'/>|" /tmp/${VM_DOMAIN}.xml
+  sed -i "s|<target dev='vda' bus='virtio'/>|<target dev='vda' bus='virtio'/>\n      <boot order='2'/>|" /tmp/${VM_DOMAIN}.xml
+  sed -i "s|<target dev='vdb' bus='virtio'/>|<target dev='vdb' bus='virtio'/>\n      <boot order='3'/>|" /tmp/${VM_DOMAIN}.xml
+  sed -i "s|<target dev='sdb' bus='sata'/>|<target dev='sdb' bus='sata'/>\n      <boot order='4'/>\n      <source file='${ISO_PATH}'/>|" /tmp/${VM_DOMAIN}.xml
+  virsh define /tmp/${VM_DOMAIN}.xml
+  virsh start ${VM_DOMAIN}
+done
