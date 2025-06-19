@@ -31,8 +31,8 @@ sed "s|openshift-v4/dependencies|openshift-v4/amd64/dependencies|" -i configmap-
 
 echo "[INFO] Changing pod to host networking..."
 grep 'hostNetwork' pod-persistent-disconnected.yml >/dev/null 2>&1 || sed -i 's/spec:/spec:\n  hostNetwork: true/' pod-persistent-disconnected.yml
-sed -i 's/    ports://g' pod-persistent-disconnected.yml
-sed -i 's/    - hostPort:.*$//g' pod-persistent-disconnected.yml
+sed -i '/    ports:/d' pod-persistent-disconnected.yml
+sed -i '/    - hostPort:/d' pod-persistent-disconnected.yml
 
 echo "[INFO] Inserting certificate to configmap..."
 yes | cp -f ${WORKDIR}/tls-ca-bundle.pem . >/dev/null 2>&1

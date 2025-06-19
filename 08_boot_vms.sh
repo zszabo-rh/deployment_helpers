@@ -14,15 +14,9 @@ echo "[INFO] Attaching discovery ISO and setting boot order for VMs..."
 for VM_DOMAIN in $(virsh list --all --name); do
   virsh dumpxml ${VM_DOMAIN} > /tmp/${VM_DOMAIN}.xml && cp /tmp/${VM_DOMAIN}.xml /tmp/${VM_DOMAIN}.xml.bak
   # Remove current "first boot device" if exists
-  sed -i "s|      <boot order='1'/>$||" /tmp/${VM_DOMAIN}.xml
-  sed -i "s|      <boot order='2'/>$||" /tmp/${VM_DOMAIN}.xml
-  sed -i "s|      <boot order='3'/>$||" /tmp/${VM_DOMAIN}.xml
-  sed -i "s|      <boot order='4'/>$||" /tmp/${VM_DOMAIN}.xml
-  sed -i "s|      <source file=''/>$||" /tmp/${VM_DOMAIN}.xml
-  sed -i "s|      <source file='.*iso'/>$||" /tmp/${VM_DOMAIN}.xml
-  sed -i "s|    <boot dev='network'/>$||" /tmp/${VM_DOMAIN}.xml
-  sed -i "s|    <boot dev='cdrom'/>$||" /tmp/${VM_DOMAIN}.xml
-  sed -i "s|    <boot dev='hd'/>$||" /tmp/${VM_DOMAIN}.xml
+  sed -i "/^      <boot order=/d" /tmp/${VM_DOMAIN}.xml
+  sed -i "/^      <source file=/d" /tmp/${VM_DOMAIN}.xml
+  sed -i "/^    <boot dev=/d" /tmp/${VM_DOMAIN}.xml
   # Attach ISO to existing cdrom and mark it as last boot device
   sed -i "s|<target dev='sda' bus='scsi'/>|<target dev='sda' bus='scsi'/>\n      <boot order='1'/>|" /tmp/${VM_DOMAIN}.xml
   sed -i "s|<target dev='vda' bus='virtio'/>|<target dev='vda' bus='virtio'/>\n      <boot order='2'/>|" /tmp/${VM_DOMAIN}.xml

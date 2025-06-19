@@ -69,6 +69,7 @@ curl -s \
 "${API}/clusters/$CLUSTER_ID/install-config" >/dev/null 2>&1
 
 echo "[INFO] Downloading discovery ISO..."
+sleep 5
 rm -rf $ISO_PATH >/dev/null 2>&1
 IMAGE_URL=$(curl -s ${API}/infra-envs/${INFRA_ENV_ID}/downloads/image-url | jq -r '.url' | sed 's/full/minimal/')
 wget -q -O ${ISO_PATH} ${IMAGE_URL}
