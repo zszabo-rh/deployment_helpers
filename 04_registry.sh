@@ -36,7 +36,7 @@ oc adm release mirror \
    --from quay.io/openshift-release-dev/ocp-release:${OCP_VER}-x86_64 \
    --to-release-image ${REGISTRY_HOSTNAME}:${REG_PORT}/ocp4/openshift4:${OCP_VER}-x86_64 \
    --print-mirror-instructions idms \
-   --to ${REGISTRY_HOSTNAME}:${REG_PORT}/ocp4/openshift4 2>&1 | tee /tmp/oc_adm_mirror.log
+   --to ${REGISTRY_HOSTNAME}:${REG_PORT}/ocp4/openshift4 2>&1
 
 echo "[INFO] Installing openshift-install binary..."
 oc adm release extract -a ./pull_secret.json --command=openshift-install "${REGISTRY_HOSTNAME}:${REG_PORT}/ocp4/openshift4:${OCP_VER}-x86_64" >/dev/null 2>&1

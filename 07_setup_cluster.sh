@@ -44,7 +44,6 @@ base64 -w0 registry.conf > registry.conf.b64
 base64 -w0 tls-ca-bundle.pem  > ca.crt.b64
 
 rm -rf discovery-ignition.json
-
 cat >> discovery-ignition.json << EOF
 {"ignition_config_override": "{\"ignition\": {\"version\": \"3.1.0\"}, \"passwd\": {\"users\": [{\"groups\":[\"sudo\"],\"name\":\"core\",\"passwordHash\": \"!\",\"sshAuthorizedKeys\":[\"${SSH_KEY}\"]}]}, \"storage\": {\"files\": [{\"path\": \"/etc/containers/registries.conf\", \"mode\": 420, \"overwrite\": true, \"user\": { \"name\": \"root\"},\"contents\": {\"source\": \"data:text/plain;base64,$(cat registry.conf.b64)\"}}, {\"path\": \"/etc/pki/ca-trust/source/anchors/domain.crt\", \"mode\": 420, \"overwrite\": true, \"user\": { \"name\": \"root\"}, \"contents\": {\"source\":\"data:text/plain;base64,$(cat ca.crt.b64)\"}}]}}"}
 EOF
@@ -58,12 +57,15 @@ curl -s \
 echo "[INFO] Patching install-config..."
 export IDMS=\{\"imageDigestSources\":[\{\"source\":\"quay.io/openshift-release-dev/ocp-v4.0-art-dev\",\"mirrors\":[\"${REGISTRY_HOSTNAME}:${REG_PORT}/ocp4/openshift4\"]\},\{\"source\":\"quay.io/openshift-release-dev/ocp-release\",\"mirrors\":[\"${REGISTRY_HOSTNAME}:${REG_PORT}/ocp4/openshift4\"]\}]\}
 export TRUST_BUNDLE=$(jq -Rsc '{additionalTrustBundle: .}' ./tls-ca-bundle.pem)
-export INSTALL_PATCH=$(jq -cn --argjson idms "$IDMS" --argjson trust "$TRUST_BUNDLE" '$idms + $trust' | jq -Rc .)
+rm -rf install-config-override.json
+cat >> install-config-override.json << EOF
+$(jq -cn --argjson idms "$IDMS" --argjson trust "$TRUST_BUNDLE" '$idms + $trust' | jq -Rc .)
+EOF
 
 curl -s \
   --header "Content-Type: application/json" \
   --request PATCH \
-  --data "$INSTALL_PATCH" \
+  --data @install-config-override.json \
 "${API}/clusters/$CLUSTER_ID/install-config" >/dev/null 2>&1
 
 echo "[INFO] Downloading discovery ISO..."
