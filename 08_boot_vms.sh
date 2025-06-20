@@ -15,7 +15,6 @@ for VM_DOMAIN in $(virsh list --all --name); do
   virsh dumpxml ${VM_DOMAIN} > /tmp/${VM_DOMAIN}.xml && cp /tmp/${VM_DOMAIN}.xml /tmp/${VM_DOMAIN}.xml.bak
   # Remove current "first boot device" if exists
   sed -i "/^      <boot order=/d" /tmp/${VM_DOMAIN}.xml
-  sed -i "/^      <source file=/d" /tmp/${VM_DOMAIN}.xml
   sed -i "/^    <boot dev=/d" /tmp/${VM_DOMAIN}.xml
   # Attach ISO to existing cdrom and mark it as last boot device
   sed -i "s|<target dev='sda' bus='scsi'/>|<target dev='sda' bus='scsi'/>\n      <boot order='1'/>|" /tmp/${VM_DOMAIN}.xml

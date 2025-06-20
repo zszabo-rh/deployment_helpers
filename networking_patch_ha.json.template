@@ -1,0 +1,27 @@
+{
+  "service_networks": [
+    {
+      "cidr": "fd02::/112",
+      "cluster_id": "${CLUSTER_ID}"
+    }
+  ],
+  "cluster_networks": [
+    {
+      "cidr": "fd01::/48",
+      "cluster_id": "${CLUSTER_ID}",
+      "host_prefix": 64
+    }
+  ],
+  "api_vips": [
+    {
+      "ip": "${API_VIP}",
+      "cluster_id": "${CLUSTER_ID}"
+    }
+  ],
+  "ingress_vips": [
+    {
+      "ip": "${INGRESS_VIP}",
+      "cluster_id": "${CLUSTER_ID}"
+    }
+  ]
+}
