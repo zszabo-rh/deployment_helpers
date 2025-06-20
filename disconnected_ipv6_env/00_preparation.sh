@@ -35,7 +35,7 @@ mv pull_secret_up2.json pull_secret.json >/dev/null 2>&1
 rm -rf pull_secret_up1.json >/dev/null 2>&1
 
 echo "[INFO] Loading SSH key and pull secret..."
-echo "export SSH_KEY=$(cat ~/.ssh/${CLUSTER_NAME}.pub)" >> config.env
+echo "export SSH_KEY=\"$(cat ~/.ssh/${CLUSTER_NAME}.pub)\"" >> config.env
 echo "export PULL_SECRET_STR=$(jq -c . pull_secret.json | jq -c -R .)" >> config.env
 
 echo "[INFO] Preparation complete."
