@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ${CLUSTER_NAME}-extraworker-0-bmc-secret
+  namespace: spoke-cluster
+type: Opaque
+data:
+  username: YWRtaW4=
+  password: cGFzc3dvcmQ=
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: ${CLUSTER_NAME}-extraworker-0
+  namespace: spoke-cluster
+  annotations:
+    inspect.metal3.io: disabled
+  labels:
+    infraenvs.agent-install.openshift.io: "myinfraenv" 
+spec:
+  online: true
+  automatedCleaningMode: disabled
+  bootMACAddress: 00:1a:a6:1a:68:cd
+  bmc:
+    address: redfish-virtualmedia+http://192.168.111.1:8000/redfish/v1/Systems/581ad3a9-4a35-4550-ace0-3741577ff678
+    credentialsName: ${CLUSTER_NAME}-extraworker-0-bmc-secret

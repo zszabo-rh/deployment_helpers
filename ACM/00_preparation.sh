@@ -7,8 +7,7 @@ echo "[INFO] Generating new SSH key..."
 ssh-keygen -t rsa -f ~/.ssh/${CLUSTER_NAME} -P '' -q
 
 echo "[INFO] Installing required packages..."
-dnf install -y nginx wget git make python3 podman httpd httpd-tools jq skopeo -q >/dev/null
-wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq
+dnf install -y nginx wget git make jq -q >/dev/null
 
 OFFLINE_ACCESS_TOKEN=${OFFLINE_ACCESS_TOKEN}
 

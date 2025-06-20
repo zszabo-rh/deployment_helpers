@@ -1,0 +1,23 @@
+apiVersion: extensions.hive.openshift.io/v1beta1
+kind: AgentClusterInstall
+metadata:
+  name: test-agent-cluster-install
+  namespace: spoke-cluster
+spec:
+  clusterDeploymentRef:
+    name: single-node                        # Use the clusterDeployment name from the previous step
+  imageSetRef:
+    name: openshift-v4.13.0                  # Use the ClusterImageSet name mentioned in Cluster Prerequisites step 3
+  networking:
+    clusterNetwork:
+    - cidr: 10.128.0.0/14
+      hostPrefix: 23
+    machineNetwork:
+    - cidr: 192.168.111.0/24
+    serviceNetwork:
+    - 172.30.0.0/16
+  provisionRequirements:
+    controlPlaneAgents: 1
+  sshPublicKey: |
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDe/h3TqDHDZWq7ep2uRFgpKoyyCHz9DwHi1VzDscVPBxuJZ9s5kSDq1nt5Z1i0lxIRqCJh5fr0tnuObXI36oXq2zqO3qD0Tl9IEUS4QyJdn/M6IGq1+pGeg3/GW6UTCLuwkdaGE9bBvrnWCzC3Or48sXDE802hSeVoqbh8oDkhHvYtQIU956IWv3P0TKakcMpK/9NIi/ihGzxbe+tQE0OChB6wVzBT/uJ23NJWBOTMJoVTgvHRFB5v95O5J0bZqjkVuWHMJwjCYKRpcACRwHL+K3GOe2ajowmlCFsbaT7ik/1UdvEpIRZql9eJ84F8i4nuz+nZD/OLwk5y7pM1tWDuWKfHpUZ6yTPlO/QVPvW+qN2UW6C/hNLaoMnlYvkk9uuj8+CKvclXDNsXH7efBRlOs7HP7gncy3gWLAxiva/4Fsz6LF6A7W6h2ZFRI8QoG8qXHi9IbBdDopVBwYgPZ/+JpBGTuGxE4mVqOsn/4o2yw8Ehxgrh/Ct1bSOdCb3XW10= root@edge-17.edge.lab.eng.rdu2.redhat.com
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDrSIAnmpJYOtnP9payeh4ecjfqFOdLi8QbbEPzYQzXMBJLM5rvxv7zSTTCGxEtbV1GlkAzgEi/ix8YVrrcHWYQId5RwrZE+sVktw3LwFkRvS6lJd2p0z5uADWWBc7wtgp5bMI4n9aap4jt/dMZP2u1bDxrycQzH1dma2IVOLZT8fXDvKiWWB0Zpc9FZYtmbkswq8Jdbrl+3tNKidro4MLk8dzgfDYdfVa9xkUbRB3w8tj+UYD1YI9s2J0t9y1j8Exy6i/+SKEYmxQMqLfpD9/LrxDqa3Bw4WfcugdIDm3oBLg84t56JNS4BgivziD42Y+wU5pMv3//PjPchS5YNA81jmzzi4LwhhFs672fSsib0sp1hwTR4xXeZTk/4diV8NnuTvevNne2O79Exw3I6gprj19+TG0JS1m9vkhA/Hb5Ji0zQn0hUXVctnGZck/4Z0RLxJapkQRZHL1l9kjL3pgAUuNp6aCSi0/WauW5YqxZbdSmNc29om1c+YVYxbGGpRk= root@edge-17.edge.lab.eng.rdu2.redhat.com

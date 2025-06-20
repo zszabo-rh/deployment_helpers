@@ -12,7 +12,7 @@ export CI_TOKEN=${CI_TOKEN}
 set -x
 
 export WORKING_DIR=/home/dev-scripts
-export CLUSTER_NAME=dev
+export CLUSTER_NAME=${CLUSTER_NAME}
 export BASE_DOMAIN=redhat.com
 export IP_STACK=v6
 export BMC_DRIVER=redfish-virtualmedia

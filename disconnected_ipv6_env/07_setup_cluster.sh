@@ -1,13 +1,9 @@
 set -eu
 source config.env
 
-echo "[INFO] Loading SSH key and pull secret..."
-export SSH_KEY=$(cat ~/.ssh/cluster.pub)
-export PULL_SECRET_STR=$(jq -c . pull_secret.json | jq -c -R .)
-
 echo "[INFO] Registering new cluster..."
 export CLUSTER_ID=$(curl -s -X POST -H "Content-Type: application/json" \
-    -d "{\"name\":\"${CLUSTER_NAME}\",\"control_plane_count\":${MASTERS},\"openshift_version\":\"${OCP_VER}\",\"pull_secret\":${PULL_SECRET_STR},\"base_dns_domain\":\"redhat.com\"}" \
+    -d "{\"name\":\"${CLUSTER_NAME}\",\"control_plane_count\":${MASTERS},\"openshift_version\":\"${OCP_VER}\",\"pull_secret\":${PULL_SECRET_STR},\"base_dns_domain\":\"${BASE_DOMAIN}\"}" \
     ${API}/clusters | jq -r '.id')
 echo "export CLUSTER_ID=${CLUSTER_ID}" >> config.env
 
@@ -69,7 +65,7 @@ curl -s \
 "${API}/clusters/$CLUSTER_ID/install-config" >/dev/null 2>&1
 
 echo "[INFO] Downloading discovery ISO..."
-sleep 5
+sleep 10
 rm -rf $ISO_PATH >/dev/null 2>&1
 IMAGE_URL=$(curl -s ${API}/infra-envs/${INFRA_ENV_ID}/downloads/image-url | jq -r '.url' | sed 's/full/minimal/')
 wget -q -O ${ISO_PATH} ${IMAGE_URL}
