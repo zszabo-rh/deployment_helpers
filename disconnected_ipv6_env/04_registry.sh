@@ -75,4 +75,15 @@ for image in \
     docker://${REGISTRY_HOSTNAME}:${REG_PORT}/${image} >/dev/null 2>&1
 done
 
+echo "[INFO] Setting up web server for RHCOS images..."
+WORKDIR=$(pwd)
+sudo mkdir -p /usr/share/nginx/html/pub/openshift-v4/amd64/dependencies/rhcos/4.18/${RHCOS_VER} >/dev/null 2>&1
+cd /usr/share/nginx/html/pub/openshift-v4/amd64/dependencies/rhcos/4.18/${RHCOS_VER}
+sudo wget -q https://mirror.openshift.com/pub/openshift-v4/amd64/dependencies/rhcos/4.18/${RHCOS_VER}/rhcos-${RHCOS_VER}-x86_64-live.x86_64.iso >/dev/null 2>&1
+sudo wget -q https://mirror.openshift.com/pub/openshift-v4/amd64/dependencies/rhcos/4.18/${RHCOS_VER}/sha256sum.txt >/dev/null 2>&1
+sudo wget -q https://mirror.openshift.com/pub/openshift-v4/amd64/dependencies/rhcos/4.18/${RHCOS_VER}/rhcos-id.txt >/dev/null 2>&1
+echo "export RHCOS_ID=$(cat rhcos-id.txt)" >> ${WORKDIR}/config.env
+sudo systemctl enable nginx --now >/dev/null 2>&1
+cd ${WORKDIR}
+
 echo "[INFO] Registry setup and image mirroring complete."

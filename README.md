@@ -14,8 +14,8 @@ export OFFLINE_ACCESS_TOKEN="<your_offline_ci_token>"
 ./02_fix_certificate.sh
 ./03_firewall.sh
 ./04_registry.sh
-./05_assisted_installer.sh
-./06_disable_ipv4.sh
+./05_disable_ipv4.sh
+./06_assisted_installer.sh
 ./07_setup_cluster.sh
 ./08_boot_vms.sh
 ```

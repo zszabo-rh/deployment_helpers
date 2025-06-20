@@ -1,19 +1,6 @@
 source config.env
 WORKDIR=$(pwd)
 
-echo "[INFO] Setting up web server for RHCOS images..."
-sudo mkdir -p /usr/share/nginx/html/pub/openshift-v4/amd64/dependencies/rhcos/4.18/${RHCOS_VER} >/dev/null 2>&1
-cd /usr/share/nginx/html/pub/openshift-v4/amd64/dependencies/rhcos/4.18/${RHCOS_VER}
-sudo wget -q https://mirror.openshift.com/pub/openshift-v4/amd64/dependencies/rhcos/4.18/${RHCOS_VER}/rhcos-${RHCOS_VER}-x86_64-live.x86_64.iso >/dev/null 2>&1
-sudo wget -q https://mirror.openshift.com/pub/openshift-v4/amd64/dependencies/rhcos/4.18/${RHCOS_VER}/sha256sum.txt >/dev/null 2>&1
-sudo wget -q https://mirror.openshift.com/pub/openshift-v4/amd64/dependencies/rhcos/4.18/${RHCOS_VER}/rhcos-id.txt >/dev/null 2>&1
-export RHCOS_ID=$(cat rhcos-id.txt)
-sudo systemctl enable nginx --now >/dev/null 2>&1
-
-echo "[INFO] Cloning assisted-service repository..."
-cd ${WORKDIR}
-rm -rf ./assisted-service >/dev/null 2>&1
-git clone -q https://github.com/openshift/assisted-service.git >/dev/null 2>&1
 cd assisted-service/deploy/podman/
 
 echo "[INFO] Updating URLs, IPs, and image versions in configmap..."
@@ -33,7 +20,7 @@ echo "[INFO] Changing pod to host networking..."
 grep 'hostNetwork' pod-persistent-disconnected.yml >/dev/null 2>&1 || sed -i 's/spec:/spec:\n  hostNetwork: true/' pod-persistent-disconnected.yml
 sed -i '/    ports:/d' pod-persistent-disconnected.yml
 sed -i '/    - hostPort:/d' pod-persistent-disconnected.yml
-sed -i 's/quay.io/${REGISTRY_HOSTNAME}:${REG_PORT}/g' pod-persistent-disconnected.yml
+sed -i "s/quay.io/${REGISTRY_HOSTNAME}:${REG_PORT}/g" pod-persistent-disconnected.yml
 
 echo "[INFO] Inserting certificate to configmap..."
 yes | cp -f ${WORKDIR}/tls-ca-bundle.pem . >/dev/null 2>&1

@@ -64,10 +64,16 @@ curl -s \
   --data @install-config-override.json \
 "${API}/clusters/$CLUSTER_ID/install-config" >/dev/null 2>&1
 
-echo "[INFO] Downloading discovery ISO..."
-sleep 10
 rm -rf $ISO_PATH >/dev/null 2>&1
-IMAGE_URL=$(curl -s ${API}/infra-envs/${INFRA_ENV_ID}/downloads/image-url | jq -r '.url' | sed 's/full/minimal/')
+while true; do
+    IMAGE_URL=$(curl -s ${API}/infra-envs/${INFRA_ENV_ID}/downloads/image-url | jq -r '.url' | sed 's/full/minimal/')
+    if [[ $IMAGE_URL =~ ^http ]]; then
+        break
+    fi
+    echo "[INFO] Waiting for a valid IMAGE_URL..."
+    sleep 5
+done
+echo "[INFO] Downloading discovery ISO..."
 wget -q -O ${ISO_PATH} ${IMAGE_URL}
 
 echo "[INFO] Cluster setup complete."

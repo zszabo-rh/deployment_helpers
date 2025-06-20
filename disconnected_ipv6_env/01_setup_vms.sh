@@ -1,8 +1,6 @@
 set -eu
 source config.env
 
-echo "[INFO] Cloning dev-scripts repository..."
-git clone -q https://github.com/openshift-metal3/dev-scripts >/dev/null 2>&1
 cd dev-scripts
 
 cat >> config_root.sh<< EOF
