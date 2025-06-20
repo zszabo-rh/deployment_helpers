@@ -55,8 +55,17 @@ skopeo copy --authfile ./pull_secret.json \
 docker://registry.redhat.io/ubi9/ubi@sha256:20f695d2a91352d4eaa25107535126727b5945bff38ed36a3e59590f495046f0 \
 docker://${REGISTRY_HOSTNAME}:${REG_PORT}/ubi9/ubi >/dev/null 2>&1
 
+echo "[INFO] Copying postgresql image to local registry..."
+skopeo copy --authfile ./pull_secret.json \
+--remove-signatures --dest-tls-verify=false \
+docker://quay.io/sclorg/postgresql-12-c8s:latest \
+docker://${REGISTRY_HOSTNAME}:${REG_PORT}/sclorg/postgresql-12-c8s:latest >/dev/null 2>&1
+
 echo "[INFO] Copying assisted-installer images to local registry..."
 for image in \
+  edge-infrastructure/assisted-installer-ui:latest \
+  edge-infrastructure/assisted-image-service:latest \
+  edge-infrastructure/assisted-service:latest \
   edge-infrastructure/assisted-installer-agent:latest \
   edge-infrastructure/assisted-installer:latest \
   edge-infrastructure/assisted-installer-controller:latest; do
