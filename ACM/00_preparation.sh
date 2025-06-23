@@ -7,7 +7,7 @@ echo "[INFO] Generating new SSH key..."
 ssh-keygen -t rsa -f ~/.ssh/${CLUSTER_NAME} -P '' -q
 
 echo "[INFO] Installing required packages..."
-dnf install -y nginx wget git make jq -q >/dev/null
+dnf install -y wget git make jq -q >/dev/null
 
 OFFLINE_ACCESS_TOKEN=${OFFLINE_ACCESS_TOKEN}
 
@@ -25,13 +25,6 @@ curl -s -X POST "https://api.stage.openshift.com/api/accounts_mgmt/v1/access_tok
   -H "accept: application/json" \
   -H "Authorization: Bearer $TOKEN" \
   --output pull_secret.json
-
-echo "[INFO] Updating pull secret with local auth strings..."
-jq ".auths += $LOCAL_AUTHSTRING" < pull_secret.json > pull_secret_up1.json
-jq ".auths += $LOCAL_AUTHSTRING_IP" < pull_secret_up1.json > pull_secret_up2.json
-rm -rf pull_secret.json >/dev/null 2>&1
-mv pull_secret_up2.json pull_secret.json >/dev/null 2>&1
-rm -rf pull_secret_up1.json >/dev/null 2>&1
 
 echo "[INFO] Loading SSH key and pull secret..."
 echo "export SSH_KEY=$(cat ~/.ssh/${CLUSTER_NAME}.pub)" >> config.env
