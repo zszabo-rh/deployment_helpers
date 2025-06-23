@@ -10,6 +10,8 @@ echo "[INFO] Installing required packages..."
 dnf install -y nginx wget git make python3 podman httpd httpd-tools jq skopeo -q >/dev/null
 wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq
 
+curl -L https://mirror.openshift.com/pub/openshift-v4/amd64/clients/ocp/latest/openshift-client-linux-amd64-rhel8.tar.gz | sudo tar -U -C /usr/local/bin -xzf - 
+
 OFFLINE_ACCESS_TOKEN=${OFFLINE_ACCESS_TOKEN}
 
 echo "[INFO] Requesting OpenShift access token..."
