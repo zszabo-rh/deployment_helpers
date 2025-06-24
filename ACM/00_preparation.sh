@@ -28,6 +28,6 @@ curl -s -X POST "https://api.stage.openshift.com/api/accounts_mgmt/v1/access_tok
 
 echo "[INFO] Loading SSH key and pull secret..."
 echo "export SSH_KEY=$(cat ~/.ssh/${CLUSTER_NAME}.pub)" >> config.env
-echo "export PULL_SECRET_STR=$(jq -c . pull_secret.json | jq -c -R .)" >> config.env
+echo "export PULL_SECRET_STR=$(jq -c . pull_secret.json | jq -c -R . | jq -c -R .)" >> config.env
 
 echo "[INFO] Preparation complete."
