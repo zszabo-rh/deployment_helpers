@@ -38,7 +38,7 @@ rm -rf pull_secret_up1.json >/dev/null 2>&1
 
 echo "[INFO] Loading SSH key and pull secret..."
 echo "export SSH_KEY=\"$(cat ~/.ssh/${CLUSTER_NAME}.pub)\"" >> config.env
-echo "export PULL_SECRET_STR=$(jq -c . pull_secret.json | jq -c -R .)" >> config.env
+echo "export PULL_SECRET_STR=$(jq -c . pull_secret.json | jq -c -R . | jq -c -R .)" >> config.env
 
 echo "[INFO] Cloning assisted-service repository..."
 git clone -q https://github.com/openshift/assisted-service.git >/dev/null 2>&1
